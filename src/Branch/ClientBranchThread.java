@@ -20,11 +20,6 @@ public class ClientBranchThread extends Thread{
 
     public ClientBranchThread(Socket socket){
         this.mSocket = socket;
-        try {
-            ois = new ObjectInputStream(this.mSocket.getInputStream());
-        }catch(IOException e){
-            e.printStackTrace();
-        }
         this.start();
 
     }
@@ -40,9 +35,10 @@ public class ClientBranchThread extends Thread{
     public void start(){
         boolean running = true;
         try {
+            //ois = new ObjectInputStream(this.mSocket.getInputStream());
             //ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
             while (running) {
-                Object command = ois.readObject();
+                /*Object command = ois.readObject();
                 if(command instanceof String) {
                     System.out.println("ServerList Requested");
                 }
@@ -52,7 +48,7 @@ public class ClientBranchThread extends Thread{
                 }
                 else{
                     System.out.println("Default executed");
-                }
+                }*/
             }
         }catch (Exception e) {
             e.printStackTrace();

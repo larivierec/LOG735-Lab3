@@ -25,22 +25,6 @@ public class ServerBankThread extends Thread {
         if(this.mServerList.indexOf(server) == -1){
             System.out.println("Connection accepted on port: " + server.getPort() + " ip: " + server.getLocalAddress());
             this.mServerList.add(server);
-            sendServerList();
-        }
-    }
-
-    public void sendServerList(){
-        for(Socket s : this.mServerList){
-            String socketPort = String.valueOf(s.getLocalPort());
-            String socketAddress = s.getLocalSocketAddress().toString();
-
-            try{
-                OutputStream out = s.getOutputStream();
-                out.write(socketPort.getBytes(),0,socketPort.length());
-                out.write(socketAddress.getBytes(),0,socketAddress.length());
-            }catch(IOException e){
-                System.out.println("Error writing server list to servers." + e.toString());
-            }
         }
     }
 

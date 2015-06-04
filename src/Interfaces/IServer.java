@@ -1,6 +1,6 @@
 package Interfaces;
 
-public class IServer {
+public class IServer extends Thread{
     private String mIpAddress;
     private int mListenPort;
     private int mDestinationPort;

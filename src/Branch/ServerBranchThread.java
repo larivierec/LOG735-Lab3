@@ -25,6 +25,7 @@ public class ServerBranchThread extends Thread {
         if(this.mServerList.indexOf(server) == -1){
             System.out.println("Connection accepted on port: " + server.getPort() + " ip: " + server.getLocalAddress());
             this.mServerList.add(server);
+            this.mClientList.add(new ClientBranchThread(server));
             sendServerList();
         }
     }
@@ -51,6 +52,7 @@ public class ServerBranchThread extends Thread {
             System.out.println("Le serveur ecoute sur le port: " + mServer.getListeningPort());
             while (true) {
                 onNewConnection(this.mServerSocket.accept());
+
             }
         }
         catch(IOException e){

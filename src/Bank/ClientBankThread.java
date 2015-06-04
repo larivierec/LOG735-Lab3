@@ -6,43 +6,27 @@ import java.io.*;
 import java.net.Socket;
 
 public class ClientBankThread extends Thread{
-    private Socket  mSocket;
-    private ObjectInputStream ois;
+    private Socket              mSocket;
+    private ObjectInputStream   mOIS;
+    private ObjectOutputStream  mOOS;
 
-    public ClientBankThread(){}
-    public ClientBankThread(IServer IServer){
-        try{
-            this.mSocket = new Socket(IServer.getIpAddress(), IServer.getDestinationPort());
-        }catch(IOException e){
-            System.out.println("Client Connection vers: " + IServer.getDestinationPort() + " port: " + IServer.getIpAddress());
-        }
-    }
 
-    public ClientBankThread(Socket socket){
+    public ClientBankThread(Socket socket, IServer server){
         this.mSocket = socket;
         try {
-            ois = new ObjectInputStream(this.mSocket.getInputStream());
+            mOIS = new ObjectInputStream(this.mSocket.getInputStream());
+            mOOS = new ObjectOutputStream(this.mSocket.getOutputStream());
         }catch(IOException e){
             e.printStackTrace();
-        }
-        this.start();
-
-    }
-    public ClientBankThread(String ipAddr, int destPort){
-        try{
-            this.mSocket = new Socket(ipAddr,destPort);
-        }catch(IOException e){
-            System.out.println("Client Connection vers: " + ipAddr + " port: " + destPort);
         }
     }
 
     @Override
-    public void start(){
+    public void run(){
         boolean running = true;
         try {
-            //ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
             while (running) {
-                Object command = ois.readObject();
+                Object command = mOIS.readObject();
                 if(command instanceof String) {
                     System.out.println("ServerList Requested");
                 }
