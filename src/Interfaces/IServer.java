@@ -1,16 +1,18 @@
-public class Server{
+package Interfaces;
+
+public class IServer {
     private String mIpAddress;
     private int mListenPort;
     private int mDestinationPort;
 
-    public Server(){}
+    public IServer(){}
 
-    public Server(String ipAddr, int port){
+    public IServer(String ipAddr, int port){
         this.mIpAddress = ipAddr;
         this.mListenPort = port;
     }
 
-    public Server(String ipAddr, int listenPort, int destPort){
+    public IServer(String ipAddr, int listenPort, int destPort){
         this.mIpAddress = ipAddr;
         this.mListenPort = listenPort;
         this.mDestinationPort = destPort;
