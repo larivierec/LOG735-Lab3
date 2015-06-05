@@ -7,12 +7,14 @@ import java.net.Socket;
 
 public class ClientBankThread extends Thread{
     private Socket              mSocket;
+    private Bank                mBank;
     private ObjectInputStream   mOIS;
     private ObjectOutputStream  mOOS;
 
 
-    public ClientBankThread(Socket socket, IServer server){
+    public ClientBankThread(Socket socket, Bank bank){
         this.mSocket = socket;
+        this.mBank = bank;
         try {
             mOIS = new ObjectInputStream(this.mSocket.getInputStream());
             mOOS = new ObjectOutputStream(this.mSocket.getOutputStream());
@@ -25,21 +27,25 @@ public class ClientBankThread extends Thread{
     public void run(){
         boolean running = true;
         try {
+
+            int commandID = (Integer) mOIS.readObject();
+
             while (running) {
-                Object command = mOIS.readObject();
-                if(command instanceof String) {
-                    System.out.println("ServerList Requested");
+                if(commandID == 1) {
+                    System.out.println("Bank Amount Updated");
+                    mBank.update(null, (Integer) mOIS.readObject());
                 }
-                else if(command instanceof Integer) {
-                    System.out.println("Received a number");
+                else if(commandID == 2) {
 
                 }
-                else{
-                    System.out.println("Default executed");
-                }
+                commandID = 0;
             }
         }catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    Object parseCommand(Object obj){
+        return null;
     }
 }

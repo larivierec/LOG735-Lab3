@@ -1,6 +1,7 @@
 package Branch;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,13 +12,13 @@ import Interfaces.IServer;
 
 public class ServerBranchThread extends Thread {
     private ServerSocket mServerSocket;
-    private IServer mServer;
+    private Branch mServer;
 
     private List<Socket> mServerList;
     private List<ClientBranchThread> mClientList;
 
-    public ServerBranchThread(IServer IServer){
-        this.mServer = IServer;
+    public ServerBranchThread(Branch branch){
+        this.mServer = branch;
         this.mServerList = new ArrayList<Socket>();
     }
 
@@ -25,23 +26,19 @@ public class ServerBranchThread extends Thread {
         if(this.mServerList.indexOf(server) == -1){
             System.out.println("Connection accepted on port: " + server.getPort() + " ip: " + server.getLocalAddress());
             this.mServerList.add(server);
+            sendBranchInfo(server);
             this.mClientList.add(new ClientBranchThread(server));
-            sendServerList();
         }
     }
 
-    public void sendServerList(){
-        for(Socket s : this.mServerList){
-            String socketPort = String.valueOf(s.getLocalPort());
-            String socketAddress = s.getLocalSocketAddress().toString();
-
-            try{
-                OutputStream out = s.getOutputStream();
-                out.write(socketPort.getBytes(),0,socketPort.length());
-                out.write(socketAddress.getBytes(),0,socketAddress.length());
-            }catch(IOException e){
-                System.out.println("Error writing server list to servers." + e.toString());
-            }
+    void sendBranchInfo(Socket sock){
+        try{
+            ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
+            oos.writeObject(1);
+            oos.writeObject(mServer.getCurrentMoney());
+            oos.flush();
+        }catch(IOException e){
+            e.printStackTrace();
         }
     }
 
@@ -52,7 +49,6 @@ public class ServerBranchThread extends Thread {
             System.out.println("Le serveur ecoute sur le port: " + mServer.getListeningPort());
             while (true) {
                 onNewConnection(this.mServerSocket.accept());
-
             }
         }
         catch(IOException e){

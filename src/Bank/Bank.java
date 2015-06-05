@@ -25,7 +25,7 @@ public class Bank extends IServer implements IObserver{
 
     @Override
     public void update(Object observable, Object arg) {
-
+        this.mArgentTotal += (Integer) arg;
     }
 
     public static void main(String [] args){

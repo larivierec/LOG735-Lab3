@@ -11,20 +11,24 @@ import Interfaces.IServer;
 
 public class ServerBankThread extends Thread {
     private ServerSocket mServerSocket;
-    private IServer mServer;
+    private Bank mServer;
 
     private List<Socket> mServerList;
     private List<ClientBankThread> mClientList;
 
-    public ServerBankThread(IServer IServer){
-        this.mServer = IServer;
+    public ServerBankThread(Bank bank){
+        this.mServer = bank;
         this.mServerList = new ArrayList<Socket>();
+        this.mClientList = new ArrayList<ClientBankThread>();
     }
 
     public void onNewConnection(Socket server){
         if(this.mServerList.indexOf(server) == -1){
             System.out.println("Connection accepted on port: " + server.getPort() + " ip: " + server.getLocalAddress());
             this.mServerList.add(server);
+            ClientBankThread clientThread = new ClientBankThread(server,mServer);
+            this.mClientList.add(clientThread);
+            clientThread.run();
         }
     }
 

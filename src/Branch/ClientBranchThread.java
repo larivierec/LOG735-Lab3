@@ -7,36 +7,34 @@ import java.net.Socket;
 
 public class ClientBranchThread extends Thread{
     private Socket  mSocket;
-    private ObjectInputStream ois;
+    private Branch  mBranch;
+    private ObjectInputStream  ois;
+    private ObjectOutputStream oos;
 
-    public ClientBranchThread(){}
-    public ClientBranchThread(IServer IServer){
+    public ClientBranchThread(Branch branch){
+        this.mBranch = branch;
         try{
-            this.mSocket = new Socket(IServer.getIpAddress(), IServer.getDestinationPort());
+            this.mSocket = new Socket(branch.getIpAddress(), branch.getDestinationPort());
         }catch(IOException e){
-            System.out.println("Client Connection vers: " + IServer.getDestinationPort() + " port: " + IServer.getIpAddress());
+            System.out.println("Client Connection vers: " + branch.getDestinationPort() + " port: " + branch.getIpAddress());
         }
     }
 
     public ClientBranchThread(Socket socket){
         this.mSocket = socket;
-        this.start();
-
-    }
-    public ClientBranchThread(String ipAddr, int destPort){
-        try{
-            this.mSocket = new Socket(ipAddr,destPort);
-        }catch(IOException e){
-            System.out.println("Client Connection vers: " + ipAddr + " port: " + destPort);
-        }
     }
 
     @Override
     public void start(){
         boolean running = true;
         try {
-            //ois = new ObjectInputStream(this.mSocket.getInputStream());
-            //ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
+            oos = new ObjectOutputStream(this.mSocket.getOutputStream());
+
+            oos.writeObject(1);
+            oos.writeObject(mBranch.getCurrentMoney());
+
+            ois = new ObjectInputStream(this.mSocket.getInputStream());
+
             while (running) {
                 /*Object command = ois.readObject();
                 if(command instanceof String) {
