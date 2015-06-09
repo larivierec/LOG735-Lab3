@@ -1,20 +1,22 @@
 package Branch;
 
-import Interfaces.IServer;
-
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClientBranchThread extends Thread{
     private Socket  mSocket;
     private Branch  mBranch;
-    private ObjectInputStream  ois;
-    private ObjectOutputStream oos;
+    private ObjectInputStream mOIS;
+    private ObjectOutputStream mOOS;
 
     public ClientBranchThread(Branch branch){
         this.mBranch = branch;
         try{
             this.mSocket = new Socket(branch.getIpAddress(), branch.getDestinationPort());
+            this.mOOS = new ObjectOutputStream(this.mSocket.getOutputStream());
+            this.mOIS = new ObjectInputStream(this.mSocket.getInputStream());
         }catch(IOException e){
             System.out.println("Client Connection vers: " + branch.getDestinationPort() + " port: " + branch.getIpAddress());
         }
@@ -25,28 +27,20 @@ public class ClientBranchThread extends Thread{
     }
 
     @Override
-    public void start(){
+    public void run(){
         boolean running = true;
         try {
-            oos = new ObjectOutputStream(this.mSocket.getOutputStream());
 
-            oos.writeObject(1);
-            oos.writeObject(mBranch.getCurrentMoney());
-
-            ois = new ObjectInputStream(this.mSocket.getInputStream());
-
+            mOOS.writeObject(1);
+            mOOS.writeObject(mBranch.getCurrentMoney());
             while (running) {
-                /*Object command = ois.readObject();
-                if(command instanceof String) {
-                    System.out.println("ServerList Requested");
+                int commandID = (Integer) mOIS.readObject();
+                if(commandID == 3){
+                    mBranch.update(this,(List) mOIS.readObject());
                 }
-                else if(command instanceof Integer) {
-                    System.out.println("Received a number");
-
+                if(commandID == 10){
+                    System.exit(0);
                 }
-                else{
-                    System.out.println("Default executed");
-                }*/
             }
         }catch (Exception e) {
             e.printStackTrace();

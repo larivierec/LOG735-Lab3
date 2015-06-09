@@ -10,12 +10,16 @@ public class Bank extends IServer implements IObserver{
 
     private List<IServer>    mServerList;
     private ServerBankThread mServerBankThread;
-    private int              mArgentTotal;
+    private int              mArgentTotal = 0;
 
     public Bank(String ipAddr, int port){
         super(ipAddr, port);
         mServerList = new ArrayList<IServer>();
         mServerBankThread = new ServerBankThread(this);
+    }
+
+    public int getArgentTotal(){
+        return this.mArgentTotal;
     }
 
     @Override

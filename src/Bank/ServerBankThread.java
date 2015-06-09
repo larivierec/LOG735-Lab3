@@ -1,34 +1,47 @@
 package Bank;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import Interfaces.IServer;
-
 
 public class ServerBankThread extends Thread {
     private ServerSocket mServerSocket;
     private Bank mServer;
 
-    private List<Socket> mServerList;
-    private List<ClientBankThread> mClientList;
+    private List<Socket> mBranchList;
 
     public ServerBankThread(Bank bank){
         this.mServer = bank;
-        this.mServerList = new ArrayList<Socket>();
-        this.mClientList = new ArrayList<ClientBankThread>();
+        this.mBranchList = new ArrayList<Socket>();
     }
 
     public void onNewConnection(Socket server){
-        if(this.mServerList.indexOf(server) == -1){
+        if(this.mBranchList.indexOf(server) == -1){
             System.out.println("Connection accepted on port: " + server.getPort() + " ip: " + server.getLocalAddress());
-            this.mServerList.add(server);
+            this.mBranchList.add(server);
             ClientBankThread clientThread = new ClientBankThread(server,mServer);
-            this.mClientList.add(clientThread);
-            clientThread.run();
+            clientThread.start();
+
+            //after receiving the bank information send the serverlist!
+            sendServerList();
+        }
+    }
+
+    public void sendServerList(){
+        for(Socket branch : mBranchList){
+            try{
+                ObjectOutputStream oos = new ObjectOutputStream(branch.getOutputStream());
+                //event id for sending branch lists
+                oos.writeObject(3);
+                //oos.writeObject(mBranchList);
+                oos.flush();
+            }
+            catch(IOException e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -39,6 +52,7 @@ public class ServerBankThread extends Thread {
             System.out.println("Le serveur ecoute sur le port: " + mServer.getListeningPort());
             while (true) {
                 onNewConnection(this.mServerSocket.accept());
+
             }
         }
         catch(IOException e){

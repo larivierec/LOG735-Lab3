@@ -1,7 +1,5 @@
 package Bank;
 
-import Interfaces.IServer;
-
 import java.io.*;
 import java.net.Socket;
 
@@ -9,15 +7,12 @@ public class ClientBankThread extends Thread{
     private Socket              mSocket;
     private Bank                mBank;
     private ObjectInputStream   mOIS;
-    private ObjectOutputStream  mOOS;
-
 
     public ClientBankThread(Socket socket, Bank bank){
         this.mSocket = socket;
         this.mBank = bank;
         try {
             mOIS = new ObjectInputStream(this.mSocket.getInputStream());
-            mOOS = new ObjectOutputStream(this.mSocket.getOutputStream());
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -31,6 +26,16 @@ public class ClientBankThread extends Thread{
             int commandID = (Integer) mOIS.readObject();
 
             while (running) {
+
+                /**
+                 * Event IDs:
+                 *
+                 * 1: Update Bank Amount
+                 * 2: ServerList Request
+                 * 3: ServerList Response
+                 */
+
+
                 if(commandID == 1) {
                     System.out.println("Bank Amount Updated");
                     mBank.update(null, (Integer) mOIS.readObject());
@@ -40,9 +45,12 @@ public class ClientBankThread extends Thread{
                 }
                 commandID = 0;
             }
-        }catch (Exception e) {
+        }catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }catch (IOException e){
             e.printStackTrace();
         }
+
     }
 
     Object parseCommand(Object obj){
