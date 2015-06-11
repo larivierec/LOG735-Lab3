@@ -1,8 +1,7 @@
 package Bank;
 
 import java.util.List;
-import java.util.Vector;
-
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import Branch.BranchInfo;
 import Interfaces.IObserver;
@@ -10,14 +9,14 @@ import Interfaces.IServer;
 
 public class Bank extends IServer implements IObserver{
 
-    private Vector<BranchInfo> mServerList;
+    private CopyOnWriteArrayList<BranchInfo> mServerList;
     private ServerBankThread mServerBankThread;
     private int              mArgentTotal = 0;
     private int              mServerID = 0;
 
     public Bank(String ipAddr, int port){
         super(ipAddr, port);
-        mServerList = new Vector<BranchInfo>();
+        mServerList = new CopyOnWriteArrayList<BranchInfo>();
         mServerBankThread = new ServerBankThread(this);
     }
 
@@ -25,7 +24,7 @@ public class Bank extends IServer implements IObserver{
         this.mServerID += 1;
     }
 
-    public void addServerToList(BranchInfo branchInfo){
+    public synchronized void addServerToList(BranchInfo branchInfo){
         this.mServerList.add(getServerID(), branchInfo);
         incrementServerID();
     }
@@ -38,7 +37,7 @@ public class Bank extends IServer implements IObserver{
         return this.mServerID;
     }
 
-    public List<BranchInfo> getServerList(){
+    public synchronized List<BranchInfo> getServerList(){
         return this.mServerList;
     }
 

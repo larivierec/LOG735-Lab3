@@ -6,19 +6,23 @@ import Interfaces.IServer;
 
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Branch extends IServer implements IObserver{
 
     private int                mCurrentMoney = 0;
-    private List<Socket>       mBranches;
+    private CopyOnWriteArrayList<BranchInfo> mBranches;
+    private Queue<BranchInfo>                mNewConnections;
     private ServerBranchThread mListenerThread;
     private ClientBranchThread mClientThread;
 
     public Branch(String ipAddr, int listeningPort, int connectionPort, int moneyOwned){
         super(ipAddr, listeningPort, connectionPort);
         this.mCurrentMoney = moneyOwned;
-        this.mBranches = new ArrayList<Socket>();
+        this.mBranches = new CopyOnWriteArrayList<BranchInfo>();
         this.mClientThread = new ClientBranchThread(this);
         this.mListenerThread = new ServerBranchThread(this);
 
@@ -30,7 +34,7 @@ public class Branch extends IServer implements IObserver{
         return this.mCurrentMoney;
     }
 
-    public synchronized void setCurrentMoney(int money){
+    public void setCurrentMoney(int money){
         this.mCurrentMoney += money;
     }
 
@@ -46,8 +50,6 @@ public class Branch extends IServer implements IObserver{
 
     @Override
     public void update(Object observable, Object arg) {
-        if(arg instanceof List){
-            this.mBranches = (ArrayList<Socket>)arg;
-        }
+
     }
 }

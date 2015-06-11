@@ -44,7 +44,7 @@ public class ClientBranchThread extends Thread{
                         //create connection for each branch
                         BranchInfo info = (BranchInfo) mOIS.readObject();
                         if(info.getIPAddress().compareTo(mBranch.getIpAddress()) != 0 && info.getListenPort() != mBranch.getListeningPort()){
-                            
+                            new BranchToBranchThread(info).start();
                         }
                     }
                 }
