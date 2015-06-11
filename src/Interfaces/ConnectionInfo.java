@@ -1,5 +1,6 @@
+package Interfaces;
 
-public class Connection {
+public class ConnectionInfo {
     public enum ConnectionEnum {
         IPADDRESS("127.0.0.1"),
         LISTENINGPORT("54321"),
