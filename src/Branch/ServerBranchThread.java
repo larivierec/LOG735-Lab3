@@ -7,7 +7,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import Interfaces.IServer;
 
 
 public class ServerBranchThread extends Thread {
@@ -36,6 +35,8 @@ public class ServerBranchThread extends Thread {
             ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
             oos.writeObject(1);
             oos.writeObject(mServer.getCurrentMoney());
+            oos.writeObject(mServer.getIpAddress());
+            oos.writeObject(mServer.getListeningPort());
             oos.flush();
         }catch(IOException e){
             e.printStackTrace();

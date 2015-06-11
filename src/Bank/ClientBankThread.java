@@ -1,5 +1,7 @@
 package Bank;
 
+import Branch.BranchInfo;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -31,17 +33,24 @@ public class ClientBankThread extends Thread{
                  * Event IDs:
                  *
                  * 1: Update Bank Amount
-                 * 2: ServerList Request
                  * 3: ServerList Response
                  */
 
 
                 if(commandID == 1) {
                     System.out.println("Bank Amount Updated");
-                    mBank.update(null, (Integer) mOIS.readObject());
-                }
-                else if(commandID == 2) {
 
+                    int initialCash = (Integer) mOIS.readObject();
+                    String ipAddr = (String) mOIS.readObject();
+                    Integer listenPort = (Integer) mOIS.readObject();
+
+                    BranchInfo info = new BranchInfo(mBank.getServerID(), initialCash, ipAddr, listenPort);
+
+                    mBank.update(null, initialCash);
+                    mBank.addServerToList(info);
+                }
+                else{
+                    //Command not known
                 }
                 commandID = 0;
             }

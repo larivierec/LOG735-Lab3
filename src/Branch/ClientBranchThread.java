@@ -2,8 +2,6 @@ package Branch;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ClientBranchThread extends Thread{
     private Socket  mSocket;
@@ -33,10 +31,22 @@ public class ClientBranchThread extends Thread{
 
             mOOS.writeObject(1);
             mOOS.writeObject(mBranch.getCurrentMoney());
+            mOOS.writeObject(mBranch.getIpAddress());
+            mOOS.writeObject(mBranch.getListeningPort());
             while (running) {
                 int commandID = (Integer) mOIS.readObject();
                 if(commandID == 3){
-                    mBranch.update(this,(List) mOIS.readObject());
+
+                    //number of elements
+                    int numberOfBranches = (Integer) mOIS.readObject();
+                    //branch infos
+                    for(int i = 0; i < numberOfBranches; i++){
+                        //create connection for each branch
+                        BranchInfo info = (BranchInfo) mOIS.readObject();
+                        if(info.getIPAddress().compareTo(mBranch.getIpAddress()) != 0 && info.getListenPort() != mBranch.getListeningPort()){
+                            
+                        }
+                    }
                 }
                 if(commandID == 10){
                     System.exit(0);
