@@ -9,6 +9,13 @@ public class BranchInfo implements Serializable{
     private String mIPAddress;
     private int mListenPort;
 
+    public BranchInfo(int id,  String ipAddr, int listenPort){
+        this.mBranchID = id;
+        this.mInitialMoney = 0;
+        this.mIPAddress = ipAddr;
+        this.mListenPort = listenPort;
+    }
+
     public BranchInfo(int id, int initialMoney, String ipAddr, int listenPort){
         this.mBranchID = id;
         this.mInitialMoney = initialMoney;

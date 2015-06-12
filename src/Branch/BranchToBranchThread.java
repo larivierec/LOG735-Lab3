@@ -9,9 +9,11 @@ public class BranchToBranchThread extends Thread{
     private Socket                          mSocket;
     private ObjectOutputStream              mOOS;
     private ObjectInputStream               mOIS;
+    private Branch                          mBranch;
 
-    public BranchToBranchThread(BranchInfo connInfo){
+    public BranchToBranchThread(BranchInfo connInfo, Branch branch){
         try {
+            mBranch = branch;
             System.out.println("Tentative de connexion à : " + connInfo.getIPAddress() + " sur le port : " + connInfo.getListenPort());
             this.mSocket = new Socket(connInfo.getIPAddress(), connInfo.getListenPort());
             this.mOOS = new ObjectOutputStream(this.mSocket.getOutputStream());
@@ -24,9 +26,18 @@ public class BranchToBranchThread extends Thread{
 
     @Override
     public void run(){
-        boolean running = true;
-        while(running){
+        try {
+            boolean running = true;
 
+            /*this.mOOS.writeObject(4);
+            this.mOOS.writeObject(mBranch.getListeningPort());
+            this.mOOS.writeObject(mBranch.getIpAddress());
+            */while (running) {
+
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
         }
     }
 

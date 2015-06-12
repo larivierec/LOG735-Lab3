@@ -21,7 +21,7 @@ public class ServerBankThread extends Thread {
 
     public void onNewConnection(Socket server){
         if(this.mBranchObjectStreamList.indexOf(server) == -1){
-            System.out.println("Connection accepted on port: " + server.getPort() + " ip: " + server.getLocalAddress());
+            System.out.println("Connexion accepte sur le port : " + server.getLocalPort() + " ip: " + server.getLocalAddress());
             try{
                 ObjectOutputStream oos = new ObjectOutputStream(server.getOutputStream());
                 this.mBranchObjectStreamList.add(oos);
@@ -43,7 +43,9 @@ public class ServerBankThread extends Thread {
                 oos.writeObject(3);
                 oos.writeObject(mBank.getServerList().size());
                 for(BranchInfo branchInfo : mBank.getServerList()){
-                    oos.writeObject(branchInfo);
+                    oos.writeObject(branchInfo.getBranchID());
+                    oos.writeObject(branchInfo.getIPAddress());
+                    oos.writeObject(branchInfo.getListenPort());
                 }
                 oos.flush();
             }

@@ -42,11 +42,23 @@ public class ClientBranchThread extends Thread{
                     //branch infos
                     for(int i = 0; i < numberOfBranches; i++){
                         //create connection for each branch
-                        BranchInfo info = (BranchInfo) mOIS.readObject();
-                        if(info.getIPAddress().compareTo(mBranch.getIpAddress()) != 0 && info.getListenPort() != mBranch.getListeningPort()){
-                            new BranchToBranchThread(info).start();
+
+                        int branchID = (Integer) mOIS.readObject();
+                        String branchIP = (String) mOIS.readObject();
+                        int branchListenPort = (Integer) mOIS.readObject();
+
+                        BranchInfo info = new BranchInfo(branchID,branchIP, branchListenPort);
+
+                        if(branchListenPort != mBranch.getListeningPort()){
+                            new BranchToBranchThread(info,mBranch).start();
                         }
                     }
+                }
+                if(commandID == 4){
+                    int listenPort = (Integer) mOIS.readObject();
+                    String ip   =   (String) mOIS.readObject();
+
+
                 }
                 if(commandID == 10){
                     System.exit(0);

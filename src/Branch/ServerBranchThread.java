@@ -7,18 +7,20 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class ServerBranchThread extends Thread {
     private ServerSocket mServerSocket;
     private Branch mServer;
 
-    private List<Socket> mServerList;
-    private List<ClientBranchThread> mClientList;
+    private CopyOnWriteArrayList<Socket> mServerList;
+    private CopyOnWriteArrayList<ClientBranchThread> mClientList;
 
     public ServerBranchThread(Branch branch){
         this.mServer = branch;
-        this.mServerList = new ArrayList<Socket>();
+        this.mServerList = new CopyOnWriteArrayList<Socket>();
+        this.mClientList = new CopyOnWriteArrayList<ClientBranchThread>();
     }
 
     public void onNewConnection(Socket server){
