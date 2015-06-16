@@ -1,5 +1,6 @@
 package Bank;
 
+import Branch.BranchActions;
 import Branch.BranchInfo;
 
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class ServerBankThread extends Thread {
      */
     public void onNewConnection(Socket socket){
         if(this.mBranchObjectStreamList.indexOf(socket) == -1){
-            System.out.println("Connexion accepte sur le port : " + socket.getLocalPort() + " ip: " + socket.getLocalAddress());
+            //System.out.println("Connexion accepte sur le port : " + socket.getLocalPort() + " ip: " + socket.getLocalAddress());
             try{
                 ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
                 this.mBranchObjectStreamList.add(oos);
@@ -54,7 +55,7 @@ public class ServerBankThread extends Thread {
             try{
                 this.sleep(50);
                 //event id for sending branch lists
-                oos.writeObject(3);
+                oos.writeObject(BranchActions.ADD_NEW_BRANCH_TO_BRANCH.getActionID());
                 oos.writeObject(mBank.getServerList().size());
                 for(BranchInfo branchInfo : mBank.getServerList()){
                     oos.writeObject(branchInfo.getBranchID());
@@ -71,11 +72,15 @@ public class ServerBankThread extends Thread {
         }
     }
 
+    public List<ObjectOutputStream> getBranchObjectStreamList() {
+        return mBranchObjectStreamList;
+    }
+
     @Override
     public void start(){
         try {
             this.mServerSocket = new ServerSocket(mBank.getListeningPort());
-            System.out.println("Le serveur ecoute sur le port: " + mBank.getListeningPort());
+            //System.out.println("Le serveur ecoute sur le port: " + mBank.getListeningPort());
             while (true) {
                 onNewConnection(this.mServerSocket.accept());
             }

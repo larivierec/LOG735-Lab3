@@ -11,8 +11,8 @@ public class Bank extends IServer implements IObserver{
 
     private CopyOnWriteArrayList<BranchInfo> mServerList;
     private ServerBankThread mServerBankThread;
-    private int              mArgentTotal = 0;
-    private int              mServerID = 0;
+    private Integer          mArgentTotal = 0;
+    private Integer          mServerID = 0;
 
     public Bank(String ipAddr, int port){
         super(ipAddr, port);
@@ -20,8 +20,8 @@ public class Bank extends IServer implements IObserver{
         mServerBankThread = new ServerBankThread(this);
     }
 
-    private synchronized void incrementServerID(){
-        this.mServerID += 1;
+    private synchronized Integer incrementServerID(){
+        return (this.mServerID += 1);
     }
 
     public synchronized void addServerToList(BranchInfo branchInfo){
@@ -36,6 +36,11 @@ public class Bank extends IServer implements IObserver{
     public synchronized int getServerID(){
         return this.mServerID;
     }
+
+    public synchronized ServerBankThread getmServerBankThread() {
+        return mServerBankThread;
+    }
+
 
     public synchronized List<BranchInfo> getServerList(){
         return this.mServerList;

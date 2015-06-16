@@ -1,6 +1,8 @@
 package Bank;
 
+import Branch.BranchActions;
 import Branch.BranchInfo;
+import com.sun.deploy.util.StringUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -25,10 +27,10 @@ public class ClientBankThread extends Thread{
         boolean running = true;
         try {
 
-            int commandID = (Integer) mOIS.readObject();
 
             while (running) {
 
+                int commandID = (Integer) mOIS.readObject();
                 /**
                  * Event IDs:
                  *
@@ -37,21 +39,27 @@ public class ClientBankThread extends Thread{
                  */
 
 
-                if(commandID == 1) {
+                if(commandID == BankActions.UPDATE_BANK_ACCOUNT.getActionID()) {
                     System.out.println("Bank Amount Updated");
 
                     int initialCash = (Integer) mOIS.readObject();
                     String ipAddr = (String) mOIS.readObject();
                     Integer listenPort = (Integer) mOIS.readObject();
 
-                    BranchInfo info = new BranchInfo(mBank.getServerID(), initialCash, ipAddr, listenPort);
+                    Integer serverId = mBank.getServerID();
+                    BranchInfo info = new BranchInfo(serverId, initialCash, ipAddr, listenPort);
 
+                    System.out.println(String.format("La succursale ( ID : %s ) avec l'adresse %s et port %s vient d'ajouter %s au reseau",serverId, ipAddr, listenPort, initialCash));
                     mBank.update(null, initialCash);
                     mBank.addServerToList(info);
+
+                    mBank.getmServerBankThread().getBranchObjectStreamList().get(serverId).writeObject(BranchActions.SET_SELF_UNIQUE_ID.getActionID());
+                    mBank.getmServerBankThread().getBranchObjectStreamList().get(serverId).writeObject(serverId);
                 }
                 else{
                     //Command not known
                 }
+
                 commandID = 0;
             }
         }catch (ClassNotFoundException e) {
