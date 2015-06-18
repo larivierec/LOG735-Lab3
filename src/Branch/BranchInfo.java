@@ -2,21 +2,21 @@ package Branch;
 
 import java.io.Serializable;
 
-public class BranchInfo implements Serializable{
+public class BranchInfo implements Serializable {
 
     private int mBranchID;
     private int mInitialMoney;
     private String mIPAddress;
     private int mListenPort;
 
-    public BranchInfo(int id,  String ipAddr, int listenPort){
+    public BranchInfo(int id, String ipAddr, int listenPort) {
         this.mBranchID = id;
         this.mInitialMoney = 0;
         this.mIPAddress = ipAddr;
         this.mListenPort = listenPort;
     }
 
-    public BranchInfo(int id, int initialMoney, String ipAddr, int listenPort){
+    public BranchInfo(int id, int initialMoney, String ipAddr, int listenPort) {
         this.mBranchID = id;
         this.mInitialMoney = initialMoney;
         this.mIPAddress = ipAddr;
@@ -53,5 +53,9 @@ public class BranchInfo implements Serializable{
 
     public void setListenPort(int mListenPort) {
         this.mListenPort = mListenPort;
+    }
+
+    public boolean compareTo(BranchInfo comparisonBranch) {
+        return (this.mBranchID != comparisonBranch.getBranchID() && this.mListenPort != comparisonBranch.getListenPort());
     }
 }

@@ -28,7 +28,6 @@ public class Branch extends IServer implements IObserver{
         this.branchToBranchThread = new CopyOnWriteArrayList<BranchToBranchThread>();
         this.mClientThread = new ClientBranchThread(this);
         this.mListenerThread = new ServerBranchThread(this);
-        this.mListenerThread = new ServerBranchThread(this);
         this.branchTransactionManager = new BranchTransactionManager(this);
 
         this.mClientThread.start();
@@ -93,8 +92,8 @@ public class Branch extends IServer implements IObserver{
                 System.exit(1);
             }
 
-            Branch td = new Branch(ConnectionInfo.ConnectionEnum.IP_ADDRESS.getNumber(),
-            Integer.parseInt(args[0]),
+            Branch td = new Branch(ConnectionInfo.ConnectionEnum.IP_ADDRESS_SERVER.getNumber(),
+                    Integer.parseInt(args[0]),
             Integer.parseInt(args[1]),
             montantIntial);
         }

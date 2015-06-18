@@ -53,7 +53,7 @@ public class ServerBankThread extends Thread {
     public void sendServerList(){
         for(ObjectOutputStream oos : mBranchObjectStreamList){
             try{
-                this.sleep(50);
+                this.sleep(500);
                 //event id for sending branch lists
                 oos.writeObject(BranchActions.ADD_NEW_BRANCH_TO_BRANCH.getActionID());
                 oos.writeObject(mBank.getServerList().size());
@@ -80,7 +80,7 @@ public class ServerBankThread extends Thread {
     public void start(){
         try {
             this.mServerSocket = new ServerSocket(mBank.getListeningPort());
-            //System.out.println("Le serveur ecoute sur le port: " + mBank.getListeningPort());
+            System.out.println("Le serveur ecoute sur le port: " + mBank.getListeningPort());
             while (true) {
                 onNewConnection(this.mServerSocket.accept());
             }

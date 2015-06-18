@@ -47,7 +47,7 @@ public class ClientBankThread extends Thread{
                     Integer listenPort = (Integer) mOIS.readObject();
 
                     Integer serverId = mBank.getServerID();
-                    BranchInfo info = new BranchInfo(serverId, initialCash, ipAddr, listenPort);
+                    BranchInfo info = new BranchInfo(serverId, initialCash, "127.0.0.1", listenPort);
 
                     System.out.println(String.format("La succursale ( ID : %s ) avec l'adresse %s et port %s vient d'ajouter %s au reseau",serverId, ipAddr, listenPort, initialCash));
                     mBank.update(null, initialCash);

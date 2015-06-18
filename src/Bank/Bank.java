@@ -62,7 +62,7 @@ public class Bank extends IServer implements IObserver{
     }
 
     public static void main(String [] args){
-        Bank bank = new Bank("127.0.0.1",12345);
+        Bank bank = new Bank("127.0.0.1", 10118);
         bank.start();
     }
 }
