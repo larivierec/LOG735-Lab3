@@ -3,6 +3,7 @@ package Branch;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -48,7 +49,7 @@ public class BranchTransactionManager extends Thread {
 
                             getRandomIntervalSleep();
                             BranchTransaction branchTransaction = BranchTransaction.validateAndPrepareBrancheRandomTransaction(branchInfo.getBranchID(), BranchTransaction.Direction.OUTGOING, branch);
-                            sendTransaction(branchTransaction);
+                            sendTransaction(branchTransaction, branch.getBranchId());
                         }
                     }
 
@@ -86,7 +87,7 @@ public class BranchTransactionManager extends Thread {
                             Integer amount = Integer.parseInt(splitedCommand[2]);
                             BranchTransaction branchTransaction = BranchTransaction.validateAndPrepareBranchTransaction(idProchainNoeud, BranchTransaction.Direction.OUTGOING, amount, branch);
 
-                            sendTransaction(branchTransaction);
+                            sendTransaction(branchTransaction, branch.getBranchId());
                         } else
                             errorCommandMessages();
                     } else if (splitedCommand.length == 1) {
@@ -97,6 +98,17 @@ public class BranchTransactionManager extends Thread {
                         } else if (splitedCommand[0].equals("e")) {
 
                             branch.setCurrentMoney(-1000);
+                        } else if (splitedCommand[0].equals("m")) {
+
+                            CopyOnWriteArrayList<BranchInfo> branches = branch.getBranches();
+
+                            for (int i = 0; i < branches.size(); i++) {
+
+                                BranchInfo branchInfo = branches.get(i);
+                                BranchToBranchThread branchToBranchThread =  branch.getBranchToBranchThread().get(i);
+
+                                branch.getBranchStateManager().sendMark(branchToBranchThread.getmOOS(), this.branch, branchInfo, true);
+                            }
                         }
                         else
                             errorCommandMessages();
@@ -120,13 +132,17 @@ public class BranchTransactionManager extends Thread {
         System.out.println("\033[32m e         // simulation perte d'argent (perte 1000 $) ");
     }
 
-    public void sendTransaction(BranchTransaction branchTransaction) throws IOException {
+    public void sendTransaction(BranchTransaction branchTransaction, int idSender) throws IOException {
         if (branchTransaction != null) {
 
             branch.setCurrentMoney(-branchTransaction.getAmount());
             mTransactions.add(branchTransaction);
 
-            this.branch.getBranchToBranchThread().get(branchTransaction.getPositionSourceDestination()).getmOOS().writeObject(BranchActions.TRANSACTION_BRANCH_TO_BRANCH.getActionID());
+            ObjectOutputStream stream = this.branch.getBranchToBranchThread().get(branchTransaction.getPositionSourceDestination()).getmOOS();
+
+            stream.writeObject(BranchActions.TRANSACTION_BRANCH_TO_BRANCH.getActionID());
+            stream.writeObject(idSender);
+
             this.branch.getBranchToBranchThread().get(branchTransaction.getPositionSourceDestination()).getmOOS().writeObject(branchTransaction.getAmount());
 
             System.out.println(String.format("\033[35m La prochaine en cours d'envoi est de %s $ / Le montant disponible dans la succursale est de %s $", branchTransaction.getAmount(), branch.getCurrentMoney() < 0 ? 0 : branch.getCurrentMoney() ));

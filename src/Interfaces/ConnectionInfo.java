@@ -3,10 +3,10 @@ package Interfaces;
 public class ConnectionInfo {
     public enum ConnectionEnum {
 
-        IP_ADDRESS_SERVER("garbinc.ddns.net"),
+        IP_ADDRESS_SERVER("127.0.0.1"),
         IP_ADDRESS_BRANCH("127.0.0.1"),
-        LISTENING_PORT("54321"),
-        CONNECTION_PORT("12345"),
+        LISTENING_PORT("10118"),
+        CONNECTION_PORT("10118"),
         LATENCE_RECEPTION("4000"),
         AUTO_TRANSACTION_TIME("5000");
 

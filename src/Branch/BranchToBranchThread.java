@@ -88,13 +88,25 @@ public class BranchToBranchThread extends Thread{
                     }
                     if (actionID.equals(BranchActions.TRANSACTION_BRANCH_TO_BRANCH.getActionID())) {
 
-
-                        System.out.println(String.format("\033[33m Transaction arrivant ... ",  mBranch.getCurrentMoney() < 0 ? 0 : mBranch.getCurrentMoney() ));
+                        System.out.println(String.format("\033[33m Transaction arrivant ... ", mBranch.getCurrentMoney() < 0 ? 0 : mBranch.getCurrentMoney()));
 
                         Integer amount = (Integer) mOIS.readObject();
+                        Integer id = (Integer) mOIS.readObject();
                         this.mBranch.setCurrentMoney(amount);
+
+                        BranchTransaction transaction = new BranchTransaction(id, BranchTransaction.Direction.INCOMING, amount);
+                        mBranch.getBranchStateManager().addBranchTransactionForNextMark(transaction);
+
                         System.out.println(String.format("\033[32m Le montant recu est de %s $ / Le montant disponible dans la succursale est de %s $", amount, this.mBranch.getCurrentMoney() ));
+
                         getTimeout();
+                    }
+                    if (actionID.equals(BranchActions.SEND_MARK_TO_BRANCH.getActionID())) {
+
+                        String markId = (String) mOIS.readObject();
+                        Integer rootMarkBranchId = (Integer) mOIS.readObject();
+
+                        System.out.println("Received mark from ");
                     }
                 }
             }
