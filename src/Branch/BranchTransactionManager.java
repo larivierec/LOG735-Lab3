@@ -46,9 +46,15 @@ public class BranchTransactionManager extends Thread {
 
                             BranchInfo branchInfo = this.branch.getBranches().get(i);
 
+                            Integer idProchainNoeud = branchInfo.getBranchID();
+                            Integer whom = branch.getBranchId();
+                            BranchTransaction branchTransaction = BranchTransaction.validateAndPrepareBrancheRandomTransaction(idProchainNoeud, BranchTransaction.Direction.OUTGOING, branch);
+
+                            branch.getBranchStateManager().getTransactions().add(branchTransaction);
+
                             getRandomIntervalSleep();
-                            BranchTransaction branchTransaction = BranchTransaction.validateAndPrepareBrancheRandomTransaction(branchInfo.getBranchID(), BranchTransaction.Direction.OUTGOING, branch);
-                            sendTransaction(branchTransaction, i);
+
+                            sendTransaction(branchTransaction, idProchainNoeud, whom);
                         }
                     }
 
@@ -84,10 +90,12 @@ public class BranchTransactionManager extends Thread {
 
                             Integer idProchainNoeud = Integer.parseInt(splitedCommand[1]);
                             Integer amount = Integer.parseInt(splitedCommand[2]);
+                            Integer whom = branch.getBranchId();
                             BranchTransaction branchTransaction = BranchTransaction.validateAndPrepareBranchTransaction(idProchainNoeud, BranchTransaction.Direction.OUTGOING, amount, branch);
 
                             branch.getBranchStateManager().getTransactions().add(branchTransaction);
-                            sendTransaction(branchTransaction,idProchainNoeud);
+                            System.out.println("who send to" + idProchainNoeud);
+                            sendTransaction(branchTransaction,idProchainNoeud, whom);
                         } else
                             errorCommandMessages(command);
                     } else if (splitedCommand.length == 1) {
@@ -143,7 +151,7 @@ public class BranchTransactionManager extends Thread {
         System.out.println("\033[32m e         // simulation perte d'argent (perte 1000 $) ");
     }
 
-    public void sendTransaction(BranchTransaction branchTransaction, int idSender) throws IOException {
+    public void sendTransaction(BranchTransaction branchTransaction, int idSender, int toWhom ) throws IOException {
         if (branchTransaction != null) {
 
             branch.setCurrentMoney(-branchTransaction.getAmount());
@@ -151,7 +159,8 @@ public class BranchTransactionManager extends Thread {
 
             ObjectOutputStream stream = this.branch.getBranchToBranchThread().get(branchTransaction.getPositionSourceDestination()).getmOOS();
 
-            String[] strings = new String[]{BranchActions.TRANSACTION_BRANCH_TO_BRANCH.getActionID().toString(),branchTransaction.getAmount().toString(), String.valueOf(idSender)};
+            System.out.println("QUOI : " + branchTransaction.getAmount().toString());
+            String[] strings = new String[]{BranchActions.TRANSACTION_BRANCH_TO_BRANCH.getActionID().toString(),branchTransaction.getAmount().toString(), String.valueOf(idSender), String.valueOf(toWhom)};
 
             stream.writeObject(strings);
 

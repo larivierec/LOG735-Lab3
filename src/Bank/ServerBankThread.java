@@ -61,6 +61,7 @@ public class ServerBankThread extends Thread {
                     oos.writeObject(branchInfo.getBranchID());
                     oos.writeObject(branchInfo.getIPAddress());
                     oos.writeObject(branchInfo.getListenPort());
+                    oos.writeObject(mBank.getArgentTotal());
                 }
             }
             catch(IOException e){

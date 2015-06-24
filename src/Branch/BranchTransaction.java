@@ -25,13 +25,23 @@ public class BranchTransaction {
 
     private Integer amount;
     private Integer positionSourceDestination;
+    private Integer positionToWhom;
     private Direction direction;
 
-    public BranchTransaction(Integer positionSourceDestination,Direction direction, Integer amount) {
+    public BranchTransaction(Integer positionSourceDestination,Direction direction, Integer amount, Integer positionToWhom) {
 
         this.amount = amount;
         this.positionSourceDestination = positionSourceDestination;
         this.direction = direction;
+        this.positionToWhom= positionToWhom;
+    }
+
+    public Integer getPositionToWhom() {
+        return positionToWhom;
+    }
+
+    public void setPositionToWhom(Integer positionTowhom) {
+        this.positionToWhom = positionTowhom;
     }
 
     public Integer getAmount() {
@@ -72,7 +82,7 @@ public class BranchTransaction {
                 if (idSourceDestination.equals(branchInfo.getBranchID())) {
 
 
-                    return new BranchTransaction(i, direction, amount);
+                    return new BranchTransaction(i, direction, amount, idSourceDestination);
                 }
             }
 
@@ -80,7 +90,7 @@ public class BranchTransaction {
 
         } else if(direction.equals(Direction.INCOMING)) {
 
-            return new BranchTransaction( idSourceDestination, direction,  amount);
+            return new BranchTransaction( idSourceDestination, direction,  amount, idSourceDestination);
         }
 
         return null;

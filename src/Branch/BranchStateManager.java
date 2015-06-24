@@ -93,7 +93,9 @@ public class BranchStateManager {
 
                 BranchToBranchCanal canal = getCalculateBranchToBranchCanal(markId, idBranchIncomingFrom, branch);
 
+
                 this.canals.add(canal);
+                System.out.println("Adding that nigga can" +canal.getAmount());
                 if(sendMessage) sendObjectToRoot(rootId, branch, canal);
 
             }
@@ -122,23 +124,24 @@ public class BranchStateManager {
     }
 
     public BranchToBranchCanal getCalculateBranchToBranchCanal(String markId, Integer idBranchIncomingFrom, Branch branch) {
-        int total = 0;
+
+        int total=0;
 
         for (BranchTransaction branchTransaction : transactions) {
 
-            System.out.println(transactions.size()+":"+branchTransaction.getDirection()+":" + idBranchIncomingFrom + ":" + branchTransaction.getPositionSourceDestination());
-
-            if (branchTransaction.getDirection().equals(BranchTransaction.Direction.INCOMING) && branch.getBranchId().equals(branchTransaction.getPositionSourceDestination())) {
+            if (branchTransaction.getDirection().equals(BranchTransaction.Direction.INCOMING) && idBranchIncomingFrom.equals(branchTransaction.getPositionToWhom())) {
 
                 total += branchTransaction.getAmount();
-                transactions.remove(branchTransaction);
+
             }
-            if (branchTransaction.getDirection().equals(BranchTransaction.Direction.OUTGOING) && idBranchIncomingFrom.equals(branchTransaction.getPositionSourceDestination())) {
+            if(branchTransaction.getDirection().equals(BranchTransaction.Direction.INCOMING) ) transactions.remove(branchTransaction);
+
+            if (branchTransaction.getDirection().equals(BranchTransaction.Direction.OUTGOING) && idBranchIncomingFrom.equals(branchTransaction.getPositionToWhom())) {
 
                 total += branchTransaction.getAmount();
-                transactions.remove(branchTransaction);
-            }
 
+            }
+            if (branchTransaction.getDirection().equals(BranchTransaction.Direction.OUTGOING)) transactions.remove(branchTransaction);
         }
 
         BranchToBranchCanal canal = new BranchToBranchCanal(branch.getBranchId(), idBranchIncomingFrom, total);
@@ -173,6 +176,7 @@ public class BranchStateManager {
             if(object instanceof BranchToBranchCanal) {
                 BranchToBranchCanal canal = (BranchToBranchCanal)object;
                 type="canal";
+                System.out.println("type canal " + canal.getAmount().toString());
                 strings = new String[]{BranchActions.SEND_MARK_INFO_TO_ROOT_BRANCH.getActionID().toString(),type,canal.getIdMark(),canal.getAmount().toString(),canal.getBranchIdAdresser().toString(),canal.getBranchIdRecipient().toString()};
             } else {
                 BranchState state = (BranchState)object;

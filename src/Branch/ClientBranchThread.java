@@ -50,7 +50,9 @@ public class ClientBranchThread extends Thread{
                         int branchID = (Integer) mOIS.readObject();
                         String branchIP = (String) mOIS.readObject();
                         int branchListenPort = (Integer) mOIS.readObject();
+                        int bankMoney = (Integer) mOIS.readObject();
 
+                        mBranch.setBankMoney(bankMoney);
                         BranchInfo info = new BranchInfo(branchID,branchIP,branchListenPort);
 
                         if(!mBranch.getBranchId().equals(branchID) ) {

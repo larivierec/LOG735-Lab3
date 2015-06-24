@@ -20,6 +20,7 @@ public class Branch extends IServer implements IObserver{
     private BranchTransactionManager branchTransactionManager;
     private CopyOnWriteArrayList<BranchToBranchThread> branchToBranchThread;
     private BranchStateManager branchStateManager;
+    private Integer bankMoney = 0 ;
 
 
     public Branch(String ipAddr, int listeningPort, int connectionPort, int moneyOwned){
@@ -35,6 +36,14 @@ public class Branch extends IServer implements IObserver{
         this.mClientThread.start();
         branchTransactionManager.start();
         this.mListenerThread.start();
+    }
+
+    public Integer getBankMoney() {
+        return bankMoney;
+    }
+
+    public void setBankMoney(Integer bankMoney) {
+        this.bankMoney = bankMoney;
     }
 
     public CopyOnWriteArrayList<BranchToBranchThread> getBranchToBranchThread() {

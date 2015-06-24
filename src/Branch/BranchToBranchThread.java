@@ -86,8 +86,8 @@ public class BranchToBranchThread extends Thread{
 
                             Integer amount = Integer.parseInt(branchObjectSender[1]);
                             Integer id = Integer.parseInt(branchObjectSender[2]);
-
-                            Thread t = new Thread(new TransferRunable(id, amount));
+                            Integer whom = Integer.parseInt(branchObjectSender[3]);
+                            Thread t = new Thread(new TransferRunable(id, amount,whom));
                             t.start();
                             //System.out.println(String.format("\033[32m Le montant recu est de %s $ / Le montant disponible dans la succursale est de %s $", amount, this.mBranch.getCurrentMoney() ));
                         }
@@ -127,6 +127,9 @@ public class BranchToBranchThread extends Thread{
                                 idAmount = branchObjectSender[3];
                                 idSender = branchObjectSender[4];
                                 idReceipient = branchObjectSender[5];
+                                System.out.println("mmm"+idAmount);
+                                System.out.println("mmm"+idSender);
+                                System.out.println("mmm"+idReceipient);
 
                                 BranchToBranchCanal canal = new BranchToBranchCanal(Integer.parseInt(idReceipient),Integer.parseInt(idSender),Integer.parseInt(idAmount));
 
@@ -163,9 +166,7 @@ public class BranchToBranchThread extends Thread{
 
                 if(!mBranch.getBranchStateManager().canalIsAlreadyInserted(canal.getBranchIdRecipient(),canal.getBranchIdAdresser(),idMark)) {
 
-                    BranchToBranchCanal canal1 = mBranch.getBranchStateManager().getCalculateBranchToBranchCanal(idMark, canal.getBranchIdAdresser(), mBranch);
-
-                    canal.setAmount(canal1.getAmount());
+                    canal.setAmount(canal.getAmount());
                     mBranch.getBranchStateManager().getCanals().add(canal);
                 }
             } else {
@@ -208,7 +209,9 @@ public class BranchToBranchThread extends Thread{
                     total+=canal.getAmount();
                 }
             }
-            System.out.println("total $ dans le systeme : "+total+"$");
+            System.out.println("total $ dans la banque : "+total+"$");
+            System.out.println("total $ dans le systeme : "+mBranch.getBankMoney()+"$");
+            System.out.print("Systeme is " + (mBranch.getBankMoney().equals(total)? " Coherent" : "Incoherent"));
         }
     }
 
@@ -264,23 +267,26 @@ public class BranchToBranchThread extends Thread{
 
     public class TransferRunable implements Runnable {
 
-        Integer amount;
+        Integer money;
         Integer id;
+        Integer whom;
 
-        public TransferRunable(Integer id, Integer amount) {
-            this.amount = amount;
+        public TransferRunable(Integer id, Integer amount, Integer whom) {
+            this.money = amount;
             this.id = id;
+            this.whom= whom;
         }
 
         @Override
         public void run() {
 
-            int money = amount;
             int unoId = id;
 
 
             System.out.println(String.format("\033[33m Transaction arrivant ... ", mBranch.getCurrentMoney() < 0 ? 0 : mBranch.getCurrentMoney()));
-            BranchTransaction transaction = new BranchTransaction(unoId, BranchTransaction.Direction.INCOMING, money);
+            System.out.println("good money nigga " + money);
+            BranchTransaction transaction = new BranchTransaction(unoId, BranchTransaction.Direction.INCOMING, money,whom);
+            System.out.println("inbound " + transaction.getAmount());
             mBranch.getBranchStateManager().addBranchTransactionForNextMark(transaction);
             getTimeout();
             mBranch.setCurrentMoney(money);
