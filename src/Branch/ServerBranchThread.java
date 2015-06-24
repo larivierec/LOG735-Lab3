@@ -27,18 +27,20 @@ public class ServerBranchThread extends Thread {
             //sendBranchInfo(server);
 
             BranchToBranchThread branchToBranchThread = new BranchToBranchThread(server, branch);
-        }
-    }
 
-    void sendBranchInfo(Socket sock){
-        try{
-            ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
-            oos.writeObject(BranchActions.TRANSACTION_BRANCH_TO_BRANCH.getActionID());
-            oos.writeObject(branch.getCurrentMoney());
-            oos.writeObject(branch.getIpAddress());
-            oos.writeObject(branch.getListeningPort());
-        }catch(IOException e){
-            e.printStackTrace();
+
+                System.out.println("");
+                System.out.println(String.format("---------------------- Liste des succursale connecte a la succursale ID : %s ----------------------", this.branch.getBranchId()));
+                System.out.println("Id\tAdresseIp\tPort\t");
+
+                for (int i = 0; i < branch.getBranches().size(); i++) {
+
+                    BranchInfo branchInfo = this.branch.getBranches().get(i);
+                    System.out.println(String.format("%s\t%s\t%s\t", branchInfo.getBranchID(), branchInfo.getIPAddress(), branchInfo.getListenPort()));
+                }
+
+                System.out.println(String.format("---------------------------------------------------------------------------------------------------"));
+                System.out.println("");
         }
     }
 

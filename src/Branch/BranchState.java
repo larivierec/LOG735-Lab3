@@ -1,21 +1,48 @@
 package Branch;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * Created by Damian on 23/06/2015.
  */
-public class BranchState {
+public class BranchState implements Serializable{
 
-    Integer branchIdStartingMark;
-    Integer branchId;
-    String idMark;
-    Integer amount;
-    BranchToBranchCanal branchToBranchCanal;
+    static final long serialVersionUID = 345335634534509234L;
 
-    public BranchState(Integer branchId, String idMark, Integer amount, BranchToBranchCanal branchToBranchCanal) {
+    private Integer branchIdStartingMark;
+    private Integer branchId;
+    private String idMark;
+    private Integer amount;
+    private boolean waitingForAnswerFucker;
+    private boolean printedAlread = false;
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public boolean getWaitingForAnswerFucker() {
+        return waitingForAnswerFucker;
+    }
+
+    public void setWaitingForAnswerFucker(boolean waitingForAnswerFucker) {
+        this.waitingForAnswerFucker = waitingForAnswerFucker;
+    }
+
+    public BranchState(Integer branchId, String idMark, Integer amount) {
         this.branchId = branchId;
         this.idMark = idMark;
         this.amount = amount;
-        this.branchToBranchCanal = branchToBranchCanal;
+        waitingForAnswerFucker = true;
+    }
+
+    public boolean isPrintedAlread() {
+        return printedAlread;
+    }
+
+    public void setPrintedAlread(boolean printedAlread) {
+        this.printedAlread = printedAlread;
     }
 
     public Integer getBranchId() {
@@ -40,14 +67,6 @@ public class BranchState {
 
     public void setAmount(Integer amount) {
         this.amount = amount;
-    }
-
-    public BranchToBranchCanal getBranchToBranchCanal() {
-        return branchToBranchCanal;
-    }
-
-    public void setBranchToBranchCanal(BranchToBranchCanal branchToBranchCanal) {
-        this.branchToBranchCanal = branchToBranchCanal;
     }
 
     public Integer getBranchIdStartingMark() {

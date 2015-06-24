@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import Branch.BranchInfo;
+import Interfaces.ConnectionInfo;
 import Interfaces.IObserver;
 import Interfaces.IServer;
 
@@ -62,7 +63,7 @@ public class Bank extends IServer implements IObserver{
     }
 
     public static void main(String [] args){
-        Bank bank = new Bank("127.0.0.1", 10118);
+        Bank bank = new Bank("127.0.0.1", Integer.parseInt(ConnectionInfo.ConnectionEnum.CONNECTION_PORT.getNumber()));
         bank.start();
     }
 }

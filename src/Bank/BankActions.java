@@ -5,7 +5,7 @@ package Bank;
  */
 public enum BankActions {
 
-    UPDATE_BANK_ACCOUNT(1);
+    UPDATE_BANK_ACCOUNT(-222222222);
 
     private Integer actionID;
 

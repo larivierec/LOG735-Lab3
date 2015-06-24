@@ -13,11 +13,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class BranchTransactionManager extends Thread {
 
     private Branch branch;
-    private CopyOnWriteArrayList<BranchTransaction> mTransactions;
+    private Boolean continueAutomatiqueTransaction=false;
 
     public BranchTransactionManager(Branch branch) {
         this.branch = branch;
-        mTransactions = new CopyOnWriteArrayList();
     }
 
     @Override
@@ -39,7 +38,7 @@ public class BranchTransactionManager extends Thread {
 
         @Override
         public void run() {
-            while (true) {
+            while (continueAutomatiqueTransaction) {
                 try {
 
                     if(branch.getBranches() != null) {
@@ -49,7 +48,7 @@ public class BranchTransactionManager extends Thread {
 
                             getRandomIntervalSleep();
                             BranchTransaction branchTransaction = BranchTransaction.validateAndPrepareBrancheRandomTransaction(branchInfo.getBranchID(), BranchTransaction.Direction.OUTGOING, branch);
-                            sendTransaction(branchTransaction, branch.getBranchId());
+                            sendTransaction(branchTransaction, i);
                         }
                     }
 
@@ -87,14 +86,24 @@ public class BranchTransactionManager extends Thread {
                             Integer amount = Integer.parseInt(splitedCommand[2]);
                             BranchTransaction branchTransaction = BranchTransaction.validateAndPrepareBranchTransaction(idProchainNoeud, BranchTransaction.Direction.OUTGOING, amount, branch);
 
+                            branch.getBranchStateManager().getTransactions().add(branchTransaction);
                             sendTransaction(branchTransaction, branch.getBranchId());
                         } else
-                            errorCommandMessages();
+                            errorCommandMessages(command);
                     } else if (splitedCommand.length == 1) {
 
-                        if (splitedCommand[0].equals("s")) {
+                        if (splitedCommand[0].equals("a")) {
 
                             System.out.println(String.format("Le montant disponible dans la succursale est de %s $", branch.getCurrentMoney()));
+                        } else if (splitedCommand[0].equals("s")) {
+
+                            if(continueAutomatiqueTransaction) {
+                                continueAutomatiqueTransaction = false;
+                            } else {
+                                continueAutomatiqueTransaction = true;
+                                BranchTransactionManagerAuto branchTransactionManagerAuto = new BranchTransactionManagerAuto(branch);
+                                branchTransactionManagerAuto.start();
+                            }
                         } else if (splitedCommand[0].equals("e")) {
 
                             branch.setCurrentMoney(-1000);
@@ -102,30 +111,32 @@ public class BranchTransactionManager extends Thread {
 
                             CopyOnWriteArrayList<BranchInfo> branches = branch.getBranches();
 
+                            String idMark = branch.getBranchStateManager().addNewMarkAndReturnId(branch);
                             for (int i = 0; i < branches.size(); i++) {
 
                                 BranchInfo branchInfo = branches.get(i);
                                 BranchToBranchThread branchToBranchThread =  branch.getBranchToBranchThread().get(i);
 
-                                branch.getBranchStateManager().sendMark(branchToBranchThread.getmOOS(), this.branch, branchInfo, true);
+                                branch.getBranchStateManager().sendMark(branchToBranchThread.getmOOS(), this.branch, this.branch.getBranchId(),idMark,false);
                             }
                         }
                         else
-                            errorCommandMessages();
+                            errorCommandMessages(command);
                     } else {
 
-                        errorCommandMessages();
+                        errorCommandMessages(command);
                     }
 
                 } catch (Exception exception) {
-
-                    errorCommandMessages();
+                    exception.printStackTrace();
+                    errorCommandMessages("OUPS");
                 }
             }
         }
     }
 
-    private void errorCommandMessages() {
+    private void errorCommandMessages(String value) {
+        System.out.println("you entered [" + value +"]");
         System.out.println("La valeur recue n'est pas valide. Voici les syntaxe d'une transaction possible :");
         System.out.println("\033[32m t [idDestinataire] [montant]  // Permet d'effectuer une transaction");
         System.out.println("\033[32m s         // permet de montrer le montant disponible ");
@@ -136,14 +147,13 @@ public class BranchTransactionManager extends Thread {
         if (branchTransaction != null) {
 
             branch.setCurrentMoney(-branchTransaction.getAmount());
-            mTransactions.add(branchTransaction);
+
 
             ObjectOutputStream stream = this.branch.getBranchToBranchThread().get(branchTransaction.getPositionSourceDestination()).getmOOS();
 
-            stream.writeObject(BranchActions.TRANSACTION_BRANCH_TO_BRANCH.getActionID());
-            stream.writeObject(idSender);
+            String[] strings = new String[]{BranchActions.TRANSACTION_BRANCH_TO_BRANCH.getActionID().toString(),branchTransaction.getAmount().toString(), String.valueOf(idSender)};
 
-            this.branch.getBranchToBranchThread().get(branchTransaction.getPositionSourceDestination()).getmOOS().writeObject(branchTransaction.getAmount());
+            stream.writeObject(strings);
 
             System.out.println(String.format("\033[35m La prochaine en cours d'envoi est de %s $ / Le montant disponible dans la succursale est de %s $", branchTransaction.getAmount(), branch.getCurrentMoney() < 0 ? 0 : branch.getCurrentMoney() ));
 

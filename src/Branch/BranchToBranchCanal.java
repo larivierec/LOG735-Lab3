@@ -1,14 +1,20 @@
 package Branch;
 
+import java.io.Serializable;
+
 /**
  * Created by Damian on 23/06/2015.
  */
-public class BranchToBranchCanal {
+public class BranchToBranchCanal implements Serializable {
 
     private Integer branchIdRecipient;
     private Integer branchIdAdresser;
 
+    private String idMark;
+
     private Integer amount;
+
+    static final long serialVersionUID = 345345345345123634L;
 
     public BranchToBranchCanal(Integer branchIdRecipient, Integer branchIdAdresser, Integer amountMoney) {
 
@@ -50,5 +56,17 @@ public class BranchToBranchCanal {
 
     public void setAmount(Integer amount) {
         this.amount = amount;
+    }
+
+    public String getIdMark() {
+        return idMark;
+    }
+
+    public void setIdMark(String idMark) {
+        this.idMark = idMark;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
     }
 }

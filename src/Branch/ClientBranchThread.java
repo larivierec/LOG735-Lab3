@@ -1,7 +1,11 @@
 package Branch;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+import Bank.BankActions;
+
 
 public class ClientBranchThread extends Thread{
     private Socket  mSocket;
@@ -29,7 +33,7 @@ public class ClientBranchThread extends Thread{
         boolean running = true;
         try {
 
-            mOOS.writeObject(1);
+            mOOS.writeObject(BankActions.UPDATE_BANK_ACCOUNT.getActionID());
             mOOS.writeObject(mBranch.getCurrentMoney());
             mOOS.writeObject(mBranch.getIpAddress());
             mOOS.writeObject(mBranch.getListeningPort());
@@ -49,40 +53,40 @@ public class ClientBranchThread extends Thread{
 
                         BranchInfo info = new BranchInfo(branchID,branchIP,branchListenPort);
 
-                        boolean isContainedInList = false;
+                        if(!mBranch.getBranchId().equals(branchID) ) {
 
-                        for(BranchInfo branchInfo :mBranch.getBranches()) {
-                            if(branchInfo.getBranchID() == branchID) {
-                                isContainedInList = true;
+                            if(!this.mBranch.isBranchContainingBranchToBranchId(branchID)) {
+                                this.mBranch.getBranches().add(info);
                             }
-                        }
 
-                        if(branchListenPort != mBranch.getListeningPort() && !isContainedInList){
+                            if (numberOfBranches - 1 == mBranch.getBranchId()) {
 
-                            this.mBranch.getBranches().add(info);
+                                System.out.println("ok" + " " + info.getBranchID());
 
-                            if(mBranch.getBranchToBranchThread().size() != this.mBranch.getBranches().size()) {
-
+                                Thread.sleep(200);
                                 BranchToBranchThread branchToBranchThread = new BranchToBranchThread(info, mBranch);
+
+                                System.out.println(String.format("Connexion a la branche ID etablie : %s ", branchID));
+
                             }
-
-                            System.out.println(String.format("Connexion a la branche ID etablie : %s ", branchID));
-
                         }
                     }
 
-                    System.out.println("");
-                    System.out.println(String.format("---------------------- Liste des succursale connecte a la succursale ID : %s ----------------------", this.mBranch.getBranchId()));
-                    System.out.println("Id\tAdresseIp\tPort\t");
+                    if(numberOfBranches-1 == mBranch.getBranchId()) {
 
-                    for(int i = 0; i < mBranch.getBranches().size(); i++){
+                        System.out.println("");
+                        System.out.println(String.format("---------------------- Liste des succursale connecte a la succursale ID : %s ----------------------", this.mBranch.getBranchId()));
+                        System.out.println("Id\tAdresseIp\tPort\t");
 
-                        BranchInfo branchInfo = this.mBranch.getBranches().get(i);
-                        System.out.println(String.format("%s\t%s\t%s\t",branchInfo.getBranchID(),branchInfo.getIPAddress(), branchInfo.getListenPort()));
+                        for (int i = 0; i < mBranch.getBranches().size(); i++) {
+
+                            BranchInfo branchInfo = this.mBranch.getBranches().get(i);
+                            System.out.println(String.format("%s\t%s\t%s\t", branchInfo.getBranchID(), branchInfo.getIPAddress(), branchInfo.getListenPort()));
+                        }
+
+                        System.out.println(String.format("---------------------------------------------------------------------------------------------------"));
+                        System.out.println("");
                     }
-
-                    System.out.println(String.format("---------------------------------------------------------------------------------------------------"));
-                    System.out.println("");
 
 
                 } else if (actionID == BranchActions.SET_SELF_UNIQUE_ID.getActionID()) {
