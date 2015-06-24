@@ -51,10 +51,8 @@ public class BranchTransactionManager extends Thread {
                             BranchTransaction branchTransaction = BranchTransaction.validateAndPrepareBrancheRandomTransaction(idProchainNoeud, BranchTransaction.Direction.OUTGOING, branch);
 
                             branch.getBranchStateManager().getTransactions().add(branchTransaction);
-
-                            getRandomIntervalSleep();
-
                             sendTransaction(branchTransaction, idProchainNoeud, whom);
+                            getRandomIntervalSleep();
                         }
                     }
 

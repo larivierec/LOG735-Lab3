@@ -170,7 +170,7 @@ public class BranchToBranchThread extends Thread{
         BranchState myState = mBranch.getBranchStateManager().getMyIfStateAlreadySaved(idMark, mBranch);
 
 
-        if(countStatesWithGoodId == nbBranch && (countCanalsWithGoodId == (nbBranch*(nbBranch-1)/2)) && !myState.isPrintedAlread() ) {
+        if(countStatesWithGoodId == nbBranch && (countCanalsWithGoodId == (nbBranch*(nbBranch-1)/2)) && !myState.isPrintedAlready() ) {
 
             myState.setPrintedAlready(true);
             int total = 0;

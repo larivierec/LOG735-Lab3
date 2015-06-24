@@ -37,7 +37,7 @@ public class BranchState implements Serializable{
         waitingForAnswerFucker = true;
     }
 
-    public boolean isPrintedAlread() {
+    public boolean isPrintedAlready() {
         return printedAlread;
     }
 
