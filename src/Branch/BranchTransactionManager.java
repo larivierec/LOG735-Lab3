@@ -158,8 +158,6 @@ public class BranchTransactionManager extends Thread {
 
 
             ObjectOutputStream stream = this.branch.getBranchToBranchThread().get(branchTransaction.getPositionSourceDestination()).getmOOS();
-
-            System.out.println("QUOI : " + branchTransaction.getAmount().toString());
             String[] strings = new String[]{BranchActions.TRANSACTION_BRANCH_TO_BRANCH.getActionID().toString(),branchTransaction.getAmount().toString(), String.valueOf(idSender), String.valueOf(toWhom)};
 
             stream.writeObject(strings);

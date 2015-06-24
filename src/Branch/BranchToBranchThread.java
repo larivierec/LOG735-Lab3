@@ -2,7 +2,6 @@ package Branch;
 
 import Bank.BankActions;
 
-import javax.swing.plaf.nimbus.State;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -51,28 +50,15 @@ public class BranchToBranchThread extends Thread{
         return mOOS;
     }
 
-    public String[] readObjectTillWorks() {
-        try {
-
-            return (String[])mOIS.readObject();
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     @Override
     public void run(){
         try {
             boolean running = true;
 
-
-                while (running) {
-
+            while (running) {
                 if (mOIS != null) {
 
-                    String[] branchObjectSender = readObjectTillWorks();
+                    String[] branchObjectSender = (String[]) mOIS.readObject();
                     if(branchObjectSender != null) {
                         if (Integer.parseInt(branchObjectSender[0]) == BankActions.UPDATE_BANK_ACCOUNT.getActionID()) {
 
@@ -87,7 +73,7 @@ public class BranchToBranchThread extends Thread{
                             Integer amount = Integer.parseInt(branchObjectSender[1]);
                             Integer id = Integer.parseInt(branchObjectSender[2]);
                             Integer whom = Integer.parseInt(branchObjectSender[3]);
-                            Thread t = new Thread(new TransferRunable(id, amount,whom));
+                            Thread t = new Thread(new BranchToBranchThread.TransferRunnable(id, amount,whom));
                             t.start();
                             //System.out.println(String.format("\033[32m Le montant recu est de %s $ / Le montant disponible dans la succursale est de %s $", amount, this.mBranch.getCurrentMoney() ));
                         }
@@ -121,7 +107,7 @@ public class BranchToBranchThread extends Thread{
                             String idSender= "";
                             String idReceipient= "";
 
-                            if(branchObjectSender[1].toString().equals("canal")){
+                            if(branchObjectSender[1].equals("canal")){
 
                                 idMark = branchObjectSender[2];
                                 idAmount = branchObjectSender[3];
@@ -170,27 +156,23 @@ public class BranchToBranchThread extends Thread{
                     mBranch.getBranchStateManager().getCanals().add(canal);
                 }
             } else {
-
                 BranchState branchState = (BranchState) object;
                 idMark = branchState.getIdMark();
                 mBranch.getBranchStateManager().getStates().add(branchState);
             }
         }
-
-
         int countStatesWithGoodId = getCountResponsesStates(idMark);
         int countCanalsWithGoodId = getCountResponsesCanals(idMark);
 
 
         int nbBranch = mBranch.getBranches().size() + 1;
-        int topologyMaxConnection = ((nbBranch*(nbBranch-1))/2);
 
         BranchState myState = mBranch.getBranchStateManager().getMyIfStateAlreadySaved(idMark, mBranch);
 
 
         if(countStatesWithGoodId == nbBranch && (countCanalsWithGoodId == (nbBranch*(nbBranch-1)/2)) && !myState.isPrintedAlread() ) {
 
-            myState.setPrintedAlread(true);
+            myState.setPrintedAlready(true);
             int total = 0;
             for(BranchState state : mBranch.getBranchStateManager().getStates()) {
 
@@ -211,7 +193,7 @@ public class BranchToBranchThread extends Thread{
             }
             System.out.println("total $ dans la banque : "+total+"$");
             System.out.println("total $ dans le systeme : "+mBranch.getBankMoney()+"$");
-            System.out.print("Systeme is " + (mBranch.getBankMoney().equals(total)? " Coherent" : "Incoherent"));
+            System.out.print("Systeme is " + (mBranch.getBankMoney().equals(total) ? " Coherent" : "Incoherent"));
         }
     }
 
@@ -223,7 +205,6 @@ public class BranchToBranchThread extends Thread{
 
             if(canal.getIdMark().equals(id)) {
                 countCanalsWithGoodId++;
-                //System.out.println("-----c " + canal.getBranchIdRecipient() + "-" + canal.getBranchIdAdresser() );
             }
         }
 
@@ -239,10 +220,8 @@ public class BranchToBranchThread extends Thread{
 
             if(state.getIdMark().equals(id)) {
                 countStatesWithGoodId++;
-                //System.out.println("-----c " +state.getBranchId() );
             }
         }
-
         return countStatesWithGoodId;
     }
 
@@ -258,20 +237,19 @@ public class BranchToBranchThread extends Thread{
         Integer amountRandomized = (int)(x * delta) + minimumTime;
 
         try {
-            //System.out.println(String.format("Timeout de %s", amountRandomized));
             Thread.sleep(amountRandomized);
         } catch (Exception ex) {
             System.out.println(String.format("Erreur timeout : Timeout de %s", amountRandomized));
         }
     }
 
-    public class TransferRunable implements Runnable {
+    public class TransferRunnable implements Runnable {
 
         Integer money;
         Integer id;
         Integer whom;
 
-        public TransferRunable(Integer id, Integer amount, Integer whom) {
+        public TransferRunnable(Integer id, Integer amount, Integer whom) {
             this.money = amount;
             this.id = id;
             this.whom= whom;
@@ -279,19 +257,15 @@ public class BranchToBranchThread extends Thread{
 
         @Override
         public void run() {
-
             int unoId = id;
 
-
             System.out.println(String.format("\033[33m Transaction arrivant ... ", mBranch.getCurrentMoney() < 0 ? 0 : mBranch.getCurrentMoney()));
-            System.out.println("good money nigga " + money);
             BranchTransaction transaction = new BranchTransaction(unoId, BranchTransaction.Direction.INCOMING, money,whom);
+
             System.out.println("inbound " + transaction.getAmount());
             mBranch.getBranchStateManager().addBranchTransactionForNextMark(transaction);
             getTimeout();
             mBranch.setCurrentMoney(money);
-
-
         }
     }
 

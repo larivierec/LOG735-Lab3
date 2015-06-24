@@ -22,11 +22,11 @@ public class BranchState implements Serializable{
         return serialVersionUID;
     }
 
-    public boolean getWaitingForAnswerFucker() {
+    public boolean getWaitingForAnswer() {
         return waitingForAnswerFucker;
     }
 
-    public void setWaitingForAnswerFucker(boolean waitingForAnswerFucker) {
+    public void setWaitingForAnswer(boolean waitingForAnswerFucker) {
         this.waitingForAnswerFucker = waitingForAnswerFucker;
     }
 
@@ -41,7 +41,7 @@ public class BranchState implements Serializable{
         return printedAlread;
     }
 
-    public void setPrintedAlread(boolean printedAlread) {
+    public void setPrintedAlready(boolean printedAlread) {
         this.printedAlread = printedAlread;
     }
 

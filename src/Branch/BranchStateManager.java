@@ -1,23 +1,14 @@
 package Branch;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
-import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/**
- * Created by Damian on 23/06/2015.
- */
 public class BranchStateManager {
 
     private int count = 0;
-    private CopyOnWriteArrayList<BranchState> states = new CopyOnWriteArrayList();
-    private CopyOnWriteArrayList<BranchToBranchCanal> canals = new CopyOnWriteArrayList();
-    private CopyOnWriteArrayList<BranchTransaction> transactions = new CopyOnWriteArrayList();
+    private CopyOnWriteArrayList<BranchState> states = new CopyOnWriteArrayList<BranchState>();
+    private CopyOnWriteArrayList<BranchToBranchCanal> canals = new CopyOnWriteArrayList<BranchToBranchCanal>();
+    private CopyOnWriteArrayList<BranchTransaction> transactions = new CopyOnWriteArrayList<BranchTransaction>();
 
 
     public void addBranchTransactionForNextMark(BranchTransaction branchTransaction) {
@@ -80,28 +71,22 @@ public class BranchStateManager {
 
         BranchState branchState = getStateAlreadySaved(markId);
         if(branchState == null) {
-
             BranchState state = new BranchState(branch.getBranchId(), markId, branch.getCurrentMoney());
-            state.setWaitingForAnswerFucker(true);
+            state.setWaitingForAnswer(true);
             states.add(state);
             sendObjectToRoot(rootId, branch, state);
-
-            sendNextMarkOrAcknoledge(markId, rootId, idBranchIncomingFrom, branch, sendMessage);
+            sendNextMarkOrAcknowledge(markId, rootId, idBranchIncomingFrom, branch, sendMessage);
         } else {
 
             if(isAcknoledge){
-
                 BranchToBranchCanal canal = getCalculateBranchToBranchCanal(markId, idBranchIncomingFrom, branch);
-
-
                 this.canals.add(canal);
-                System.out.println("Adding that nigga can" +canal.getAmount());
-                if(sendMessage) sendObjectToRoot(rootId, branch, canal);
-
+                if(sendMessage) 
+                    sendObjectToRoot(rootId, branch, canal);
             }
         }
 
-        if(!isAcknoledge && ( branchState == null || ( branchState.getWaitingForAnswerFucker())) && !canalIsAlreadyInserted(idBranchIncomingFrom,branch.getBranchId(),markId)) {
+        if(!isAcknoledge && ( branchState == null || ( branchState.getWaitingForAnswer())) && !canalIsAlreadyInserted(idBranchIncomingFrom,branch.getBranchId(),markId)) {
 
             CopyOnWriteArrayList<BranchToBranchThread> branchToBranchThread1 = branch.getBranchToBranchThread();
             for (int i = 0; i < branch.getBranches().size(); i++) {
@@ -114,7 +99,7 @@ public class BranchStateManager {
 
                     sendMark(objectOutputStream, branch, rootId, markId, true);
                     if(branchState != null) {
-                        branchState.setWaitingForAnswerFucker(false);
+                        branchState.setWaitingForAnswer(false);
                     }
                     continue;
                 }
@@ -124,22 +109,18 @@ public class BranchStateManager {
     }
 
     public BranchToBranchCanal getCalculateBranchToBranchCanal(String markId, Integer idBranchIncomingFrom, Branch branch) {
-
-        int total=0;
+        int total = 0;
 
         for (BranchTransaction branchTransaction : transactions) {
 
             if (branchTransaction.getDirection().equals(BranchTransaction.Direction.INCOMING) && idBranchIncomingFrom.equals(branchTransaction.getPositionToWhom())) {
-
                 total += branchTransaction.getAmount();
-
             }
-            if(branchTransaction.getDirection().equals(BranchTransaction.Direction.INCOMING) ) transactions.remove(branchTransaction);
+            if(branchTransaction.getDirection().equals(BranchTransaction.Direction.INCOMING) ) 
+                transactions.remove(branchTransaction);
 
             if (branchTransaction.getDirection().equals(BranchTransaction.Direction.OUTGOING) && idBranchIncomingFrom.equals(branchTransaction.getPositionToWhom())) {
-
                 total += branchTransaction.getAmount();
-
             }
             if (branchTransaction.getDirection().equals(BranchTransaction.Direction.OUTGOING)) transactions.remove(branchTransaction);
         }
@@ -149,7 +130,7 @@ public class BranchStateManager {
         return canal;
     }
 
-    private void sendNextMarkOrAcknoledge(String markId, Integer rootId, Integer idBranchIncomingFrom, Branch branch, Boolean sendMessage) {
+    private void sendNextMarkOrAcknowledge(String markId, Integer rootId, Integer idBranchIncomingFrom, Branch branch, Boolean sendMessage) {
         CopyOnWriteArrayList<BranchToBranchThread> branchToBranchThread1 = branch.getBranchToBranchThread();
         for (int i = 0; i < branch.getBranches().size(); i++) {
 
@@ -176,7 +157,6 @@ public class BranchStateManager {
             if(object instanceof BranchToBranchCanal) {
                 BranchToBranchCanal canal = (BranchToBranchCanal)object;
                 type="canal";
-                System.out.println("type canal " + canal.getAmount().toString());
                 strings = new String[]{BranchActions.SEND_MARK_INFO_TO_ROOT_BRANCH.getActionID().toString(),type,canal.getIdMark(),canal.getAmount().toString(),canal.getBranchIdAdresser().toString(),canal.getBranchIdRecipient().toString()};
             } else {
                 BranchState state = (BranchState)object;
