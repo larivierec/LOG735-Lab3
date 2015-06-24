@@ -87,7 +87,7 @@ public class BranchTransactionManager extends Thread {
                             BranchTransaction branchTransaction = BranchTransaction.validateAndPrepareBranchTransaction(idProchainNoeud, BranchTransaction.Direction.OUTGOING, amount, branch);
 
                             branch.getBranchStateManager().getTransactions().add(branchTransaction);
-                            sendTransaction(branchTransaction, branch.getBranchId());
+                            sendTransaction(branchTransaction,idProchainNoeud);
                         } else
                             errorCommandMessages(command);
                     } else if (splitedCommand.length == 1) {

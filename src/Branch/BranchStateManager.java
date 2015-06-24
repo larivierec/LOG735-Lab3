@@ -128,14 +128,14 @@ public class BranchStateManager {
 
             System.out.println(transactions.size()+":"+branchTransaction.getDirection()+":" + idBranchIncomingFrom + ":" + branchTransaction.getPositionSourceDestination());
 
-            if (branchTransaction.getDirection().equals(BranchTransaction.Direction.INCOMING) && idBranchIncomingFrom.equals(branchTransaction.getPositionSourceDestination())) {
+            if (branchTransaction.getDirection().equals(BranchTransaction.Direction.INCOMING) && branch.getBranchId().equals(branchTransaction.getPositionSourceDestination())) {
 
                 total += branchTransaction.getAmount();
                 transactions.remove(branchTransaction);
             }
-            if (branchTransaction.getDirection().equals(BranchTransaction.Direction.OUTGOING) && branch.getBranchId().equals(branchTransaction.getPositionSourceDestination())) {
+            if (branchTransaction.getDirection().equals(BranchTransaction.Direction.OUTGOING) && idBranchIncomingFrom.equals(branchTransaction.getPositionSourceDestination())) {
 
-                total -= branchTransaction.getAmount();
+                total += branchTransaction.getAmount();
                 transactions.remove(branchTransaction);
             }
 
