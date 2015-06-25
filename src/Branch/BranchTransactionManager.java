@@ -4,16 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
-import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-/**
- * Created by d.budka on 2015-06-15.
- */
 public class BranchTransactionManager extends Thread {
 
     private Branch branch;
-    private Boolean continueAutomatiqueTransaction=false;
+    private Boolean continueAutomaticTransaction = true;
 
     public BranchTransactionManager(Branch branch) {
         this.branch = branch;
@@ -38,7 +37,25 @@ public class BranchTransactionManager extends Thread {
 
         @Override
         public void run() {
-            while (continueAutomatiqueTransaction) {
+
+            ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+            exec.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    CopyOnWriteArrayList<BranchInfo> branches = branch.getBranches();
+
+                    String idMark = branch.getBranchStateManager().addNewMarkAndReturnId(branch);
+                    for (int i = 0; i < branches.size(); i++) {
+
+                        BranchInfo branchInfo = branches.get(i);
+                        BranchToBranchThread branchToBranchThread =  branch.getBranchToBranchThread().get(i);
+
+                        branch.getBranchStateManager().sendMark(branchToBranchThread.getmOOS(), branch, branch.getBranchId(),idMark,false);
+                    }
+                }
+            }, 0, 30, TimeUnit.SECONDS);
+
+            while (continueAutomaticTransaction) {
                 try {
 
                     if(branch.getBranches() != null) {
@@ -51,13 +68,11 @@ public class BranchTransactionManager extends Thread {
                             BranchTransaction branchTransaction = BranchTransaction.validateAndPrepareBrancheRandomTransaction(idProchainNoeud, BranchTransaction.Direction.OUTGOING, branch);
 
                             branch.getBranchStateManager().getTransactions().add(branchTransaction);
-                            sendTransaction(branchTransaction, idProchainNoeud, whom);
                             getRandomIntervalSleep();
+                            sendTransaction(branchTransaction, idProchainNoeud, whom);
                         }
                     }
-
                 } catch (Exception exception) {
-
                     System.out.println("Erreur s'est produite ");
                 }
             }
@@ -103,10 +118,10 @@ public class BranchTransactionManager extends Thread {
                             System.out.println(String.format("Le montant disponible dans la succursale est de %s $", branch.getCurrentMoney()));
                         } else if (splitedCommand[0].equals("s")) {
 
-                            if(continueAutomatiqueTransaction) {
-                                continueAutomatiqueTransaction = false;
+                            if(continueAutomaticTransaction) {
+                                continueAutomaticTransaction = false;
                             } else {
-                                continueAutomatiqueTransaction = true;
+                                continueAutomaticTransaction = true;
                                 BranchTransactionManagerAuto branchTransactionManagerAuto = new BranchTransactionManagerAuto(branch);
                                 branchTransactionManagerAuto.start();
                             }
