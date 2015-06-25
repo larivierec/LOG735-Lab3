@@ -1,8 +1,6 @@
 package Branch;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Damian on 23/06/2015.
@@ -16,7 +14,7 @@ public class BranchState implements Serializable{
     private String idMark;
     private Integer amount;
     private boolean waitingForAnswerFucker;
-    private boolean printedAlread = false;
+    private boolean printedAlready = false;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -26,8 +24,8 @@ public class BranchState implements Serializable{
         return waitingForAnswerFucker;
     }
 
-    public void setWaitingForAnswer(boolean waitingForAnswerFucker) {
-        this.waitingForAnswerFucker = waitingForAnswerFucker;
+    public void setWaitingForAnswer(boolean waitingForAnswer) {
+        this.waitingForAnswerFucker = waitingForAnswer;
     }
 
     public BranchState(Integer branchId, String idMark, Integer amount) {
@@ -38,11 +36,11 @@ public class BranchState implements Serializable{
     }
 
     public boolean isPrintedAlready() {
-        return printedAlread;
+        return printedAlready;
     }
 
-    public void setPrintedAlready(boolean printedAlread) {
-        this.printedAlread = printedAlread;
+    public void setPrintedAlready(boolean printedAlready) {
+        this.printedAlready = printedAlready;
     }
 
     public Integer getBranchId() {

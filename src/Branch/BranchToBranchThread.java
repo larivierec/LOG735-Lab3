@@ -179,7 +179,7 @@ public class BranchToBranchThread extends Thread{
                 if(state.getIdMark().equals(idMark)) {
 
                     System.out.println("sucursale " + state.getBranchId() + " : " + state.getAmount());
-                    total+=state.getAmount();
+                    total += state.getAmount();
                 }
             }
 
@@ -188,7 +188,7 @@ public class BranchToBranchThread extends Thread{
                 if(canal.getIdMark().equals(idMark)) {
 
                     System.out.println("canal " + canal.getBranchIdAdresser() + "-" + canal.getBranchIdRecipient() + " : " + canal.getAmount());
-                    total+=canal.getAmount();
+                    total += canal.getAmount();
                 }
             }
             System.out.println("total $ dans la banque : "+total+"$");
@@ -252,7 +252,7 @@ public class BranchToBranchThread extends Thread{
         public TransferRunnable(Integer id, Integer amount, Integer whom) {
             this.money = amount;
             this.id = id;
-            this.whom= whom;
+            this.whom = whom;
         }
 
         @Override

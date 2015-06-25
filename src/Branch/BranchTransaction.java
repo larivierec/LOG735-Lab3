@@ -1,7 +1,5 @@
 package Branch;
 
-import java.util.Random;
-
 /**
  * Created by d.budka on 2015-06-15.
  */
@@ -80,8 +78,6 @@ public class BranchTransaction {
                 BranchInfo branchInfo = branches.get(i);
 
                 if (idSourceDestination.equals(branchInfo.getBranchID())) {
-
-
                     return new BranchTransaction(i, direction, amount, idSourceDestination);
                 }
             }

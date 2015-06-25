@@ -67,7 +67,7 @@ public class BranchStateManager {
         }
     }
 
-    public void receiveMark(String markId, Integer rootId,Integer idBranchIncomingFrom, Branch branch, Boolean isAcknoledge, Boolean sendMessage) {
+    public void receiveMark(String markId, Integer rootId,Integer idBranchIncomingFrom, Branch branch, Boolean isAcknowledge, Boolean sendMessage) {
 
         BranchState branchState = getStateAlreadySaved(markId);
         if(branchState == null) {
@@ -78,7 +78,7 @@ public class BranchStateManager {
             sendNextMarkOrAcknowledge(markId, rootId, idBranchIncomingFrom, branch, sendMessage);
         } else {
 
-            if(isAcknoledge){
+            if(isAcknowledge){
                 BranchToBranchCanal canal = getCalculateBranchToBranchCanal(markId, idBranchIncomingFrom, branch);
                 this.canals.add(canal);
                 if(sendMessage) 
@@ -86,7 +86,7 @@ public class BranchStateManager {
             }
         }
 
-        if(!isAcknoledge && ( branchState == null || ( branchState.getWaitingForAnswer())) && !canalIsAlreadyInserted(idBranchIncomingFrom,branch.getBranchId(),markId)) {
+        if(!isAcknowledge && ( branchState == null || ( branchState.getWaitingForAnswer())) && !canalIsAlreadyInserted(idBranchIncomingFrom,branch.getBranchId(),markId)) {
 
             CopyOnWriteArrayList<BranchToBranchThread> branchToBranchThread1 = branch.getBranchToBranchThread();
             for (int i = 0; i < branch.getBranches().size(); i++) {
@@ -221,7 +221,6 @@ public class BranchStateManager {
 
         return false;
     }
-
 
     public CopyOnWriteArrayList<BranchToBranchCanal> getCanals() {
         return canals;

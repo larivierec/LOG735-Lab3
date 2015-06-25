@@ -179,7 +179,7 @@ public class BranchTransactionManager extends Thread {
 
         } else {
 
-            System.out.println(String.format("\033[34m La succursale ou le montant disponible est invalid"));
+            System.out.println(String.format("\033[34m La succursale ou le montant disponible est invalide"));
         }
     }
 

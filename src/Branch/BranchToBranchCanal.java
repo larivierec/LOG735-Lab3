@@ -2,9 +2,6 @@ package Branch;
 
 import java.io.Serializable;
 
-/**
- * Created by Damian on 23/06/2015.
- */
 public class BranchToBranchCanal implements Serializable {
 
     private Integer branchIdRecipient;
